@@ -1,8 +1,10 @@
 FROM python:3.8-slim
+ENV DASH_DEBUG_MODE True
 RUN mkdir /app
 WORKDIR /app
-ADD ../requirements.txt /app
+ADD requirements.txt /app
 RUN pip3 install -r requirements.txt
-ADD ../.. /app
+ADD . /app
 EXPOSE 8000
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["python", "app.py"]
+
