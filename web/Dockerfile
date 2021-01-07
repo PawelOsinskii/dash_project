@@ -4,5 +4,5 @@ WORKDIR /app
 ADD requirements.txt /app
 RUN python3 -m pip install -r requirements.txt
 ADD . .
-EXPOSE 5000
-CMD ["python3", "app.py"]
+EXPOSE 8050
+CMD [ "python3", "dashapp.py"]
