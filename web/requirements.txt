@@ -1,7 +1,1 @@
-# dash is required to call `build:py`
-dash
-dash-bootstrap-components
-gunicorn
-pandas
-matplotlib
-redis
+Flask
