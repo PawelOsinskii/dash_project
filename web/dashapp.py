@@ -35,6 +35,17 @@ app.layout = html.Div(children=[
 
     html.Hr(),
 
+    html.A("Patient 1", href='http://localhost:8050'),
+    html.A("Patient 2", href='http://localhost:8050'),
+    html.A("Patient 3", href='http://localhost:8050'),
+    html.A("Patient 4", href='http://localhost:8050'),
+    html.A("Patient 5", href='http://localhost:8050'),
+    html.A("Patient 6", href='http://localhost:8050'),
+
+    html.Hr(),
+
+    html.H3(children='Patient 1, real-time data:'),    
+  
     dcc.Graph(
         id='left_right_graph',
         figure=fig
