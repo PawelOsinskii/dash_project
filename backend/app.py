@@ -5,7 +5,7 @@ from datetime import datetime
 from threading import Timer
 
 import requests
-from flask import Flask, request, send_file, redirect, url_for
+from flask import Flask, request, send_file, redirect, url_for, jsonify
 
 conn = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
 
@@ -33,9 +33,54 @@ def update_data(interval):
 update_data(0.6)
 
 
-@app.route('/')
-def hello_world():
-    return "hello world"
+@app.route('/get/<id>')
+def get_id(id):
+    connection = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM data_from_tesla where person_id = ?", (id,))
+    rows = cur.fetchall()
+    json_return = []
+    for row in rows:
+        row_to_json = {
+            'date': row[1],
+            'l0': row[2],
+            'l1': row[3],
+            'l2': row[4],
+            'p0': row[5],
+            'p1': row[6],
+            'p2': row[7],
+            'person_id': row[8]
+        }
+        json_return.append(row_to_json)
+
+    connection.close()
+
+    return jsonify(json_return)
+
+
+@app.route('/get/all')
+def get_all():
+    connection = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM data_from_tesla")
+    rows = cur.fetchall()
+    json_return = []
+    for row in rows:
+        row_to_json ={
+                      'date': row[1],
+                      'l0': row[2],
+                      'l1': row[3],
+                      'l2': row[4],
+                      'p0': row[5],
+                      'p1': row[6],
+                      'p2': row[7],
+                      'person_id': row[8]
+                      }
+        json_return.append(row_to_json)
+
+    connection.close()
+
+    return jsonify(json_return)
 
 
 if __name__ == '__main__':
