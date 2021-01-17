@@ -4,4 +4,5 @@ dash-bootstrap-components
 gunicorn
 pandas
 matplotlib
+sqlite3
 redis
