@@ -2,6 +2,7 @@ import sqlite3
 import json
 import os
 from datetime import datetime
+import datetime
 from threading import Timer
 
 import requests
@@ -19,12 +20,16 @@ def update_data(interval):
     for i in range(1, 7):
         res = requests.get(f'http://tesla.iem.pw.edu.pl:9080/v2/monitor/{str(i)}')
         json1 = res.json()
-        dt_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        dt_string = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        dt_ten_minutes = datetime.datetime.now() - datetime.timedelta(0,600)
+        str_dt_ten_minutes = dt_ten_minutes.strftime("%Y-%m-%d %H:%M:%S.%f")
         conn.execute(
             "INSERT INTO data_from_tesla (date_of_measurmenet,l1,l2,l3,r1,r2,r3,person_id) VALUES ('%s', %s, %s,%s, %s, %s, %s, %s)" % (
                 dt_string, int(json1['trace']['sensors'][0]['value']), int(json1['trace']['sensors'][1]['value']),
                 int(json1['trace']['sensors'][2]['value']), int(json1['trace']['sensors'][3]['value']),
                 int(json1['trace']['sensors'][4]['value']), int(json1['trace']['sensors'][5]['value']), i))
+
+    conn.execute("DELETE FROM data_from_tesla where date_of_measurmenet < ?", (str_dt_ten_minutes,))
     conn.commit()
     conn.close()
 
