@@ -19,8 +19,7 @@ def update_data(interval):
     for i in range(1, 7):
         res = requests.get(f'http://tesla.iem.pw.edu.pl:9080/v2/monitor/{str(i)}')
         json1 = res.json()
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         conn.execute(
             "INSERT INTO data_from_tesla (date_of_measurmenet,l1,l2,l3,r1,r2,r3,person_id) VALUES ('%s', %s, %s,%s, %s, %s, %s, %s)" % (
                 dt_string, int(json1['trace']['sensors'][0]['value']), int(json1['trace']['sensors'][1]['value']),

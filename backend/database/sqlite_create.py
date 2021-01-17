@@ -4,6 +4,9 @@ import sqlite3
 conn = sqlite3.connect('/backend/Sqlite-Data/example.db')
 
 c = conn.cursor()
+c.execute('DROP TABLE IF EXISTS data_from_tesla')
+c.execute('DROP TABLE IF EXISTS person')
+
 c.execute('''
           CREATE TABLE person
           (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname varchar(250) NOT NULL, lastname varchar(250) NOT NULL, birthdate varchar(250) NOT NULL)
