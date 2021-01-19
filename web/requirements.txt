@@ -1,5 +1,9 @@
 Flask
 Dash
 gunicorn
+pandas
+matplotlib
+sqlite3
+redis
 numpy
 plotly
