@@ -1,6 +1,8 @@
-FROM python:3.7
-
-COPY . /backend
-WORKDIR /backend
-RUN pip install -r ./requirements.txt
-CMD ["python", "app.py"]
+FROM python:3.8-slim
+RUN mkdir /app
+WORKDIR /app
+ADD requirements.txt /app
+RUN pip3 install -r requirements.txt
+ADD . /app
+EXPOSE 8001
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
