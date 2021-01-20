@@ -8,8 +8,6 @@ from threading import Timer
 import requests
 from flask import Flask, request, send_file, redirect, url_for, jsonify
 
-conn = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
-
 app = Flask(__name__)
 data = ''
 
@@ -39,7 +37,7 @@ update_data(0.6)
 
 @app.route('/get/<id>')
 def get_id(id):
-    connection = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
+    connection = sqlite3.connect(r'Sqlite-Data/example.db')
     cur = connection.cursor()
     cur.execute("SELECT * FROM data_from_tesla where person_id = ?", (id,))
     rows = cur.fetchall()
@@ -64,7 +62,7 @@ def get_id(id):
 
 @app.route('/get/all')
 def get_all():
-    connection = sqlite3.connect(r'C:\Users\posinski\PycharmProjects\Dash\dash_project\backend\Sqlite-Data\example.db')
+    connection = sqlite3.connect(r'Sqlite-Data/example.db')
     cur = connection.cursor()
     cur.execute("SELECT * FROM data_from_tesla")
     rows = cur.fetchall()

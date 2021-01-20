@@ -6,3 +6,7 @@ services:
       - "8050:8050"
     volumes:
       - ./web:/app
+  app:
+    build: backend
+    volumes:
+      - ./backend:/backend
