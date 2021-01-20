@@ -4,4 +4,4 @@ WORKDIR /app
 ADD requirements.txt /app
 RUN pip3 install -r requirements.txt
 ADD . /app
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+CMD [ "python3", "app.py"]
