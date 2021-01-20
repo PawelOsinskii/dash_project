@@ -13,7 +13,12 @@ y_1 = np.sin(t)
 y_2 = np.cos(t)
 patients = [{'label': 'patient1', 'value': '1'},
             {'label': 'patient2', 'value': '2'},
-            {'label': 'pateint3', 'value': '3'}]
+            {'label': 'patient3', 'value': '3'}]
+
+patient = {'birthdate': 'urodziny',
+            'disabled': 'alo',
+            'firstname': 'firstname',
+            'lastname': 'lastname'}
 
 app.layout = html.Div(children=[
     html.H1(children='Orthopedist\'s aplication for movement analysis'),
@@ -27,6 +32,13 @@ app.layout = html.Div(children=[
     ),
 
     html.Hr(),
+
+    html.Div(id='patient_data', children=[
+        html.Div(children=[html.B("Birthdate: "), html.Span(id="birthdate")]),
+        html.Div(children=[html.B("Disabled: "), html.Span(id="disabled")]),
+        html.Div(children=[html.B("Firstname: "), html.Span(id="firstname")]),
+        html.Div(children=[html.B("Lastname: "), html.Span(id="lastname")])
+    ]),
 
     html.H3(children='Patient 1, real-time data:'),
 
@@ -55,7 +67,19 @@ app.layout = html.Div(children=[
             {'label': 'Mean value', 'value': '3'}
         ],
         value='1'
+    ),
+
+    html.Hr(),
+
+    html.Div([
+    dcc.Graph(id='time-graph'),
+    dcc.Slider(
+        id='time-slider',
+        min=0,
+        max=600,
+        step=1
     )
+])
 ])
 
 
@@ -116,6 +140,33 @@ def update_statistical_graph(selected_stat, patient):
 
     return figure
 
+@app.callback(
+    Output(component_id='birthdate', component_property='children'),
+    Output(component_id='disabled', component_property='children'),
+    Output(component_id='firstname', component_property='children'),
+    Output(component_id='lastname', component_property='children'),
+    Input(component_id='chose_patient',  component_property='value'))
+def update_patient(patient_number):
+    return list(patient.values())
+
+@app.callback(
+    Output('time-graph', 'figure'),
+    Input('time-slider', 'value'))
+def update_figure(time):
+    y = [1024, 1036, 1072, 965, 1055, 1000]
+    figure = {
+        'data': [{
+            'x': ['L0', 'L1', 'L2', 'R0', 'R1', 'R2'],
+            'y': y,
+            'type': 'bar',
+            'name': 'Maximal pressure'
+        }],
+        'layout': {
+            'title': 'Statistical data about foot pressure points',
+        }
+    }
+
+    return figure
 
 if __name__ == '__main__':
     app.run_server(host="0.0.0.0", port=8050, debug=True)
