@@ -1,4 +1,4 @@
-version: '2'
+version: '3.9'
 services:
   web:
     build: web
@@ -6,7 +6,31 @@ services:
       - "8050:8050"
     volumes:
       - ./web:/app
+    networks:
+      - gow
   app:
     build: backend
     volumes:
       - ./backend:/backend
+    networks:
+      - gow
+
+  db:
+    hostname: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: python123
+    networks:
+      - gow
+
+  db2:
+    build: db
+    depends_on:
+      - db
+    networks:
+      - gow
+
+networks:
+  gow:
+    driver: bridge

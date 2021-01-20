@@ -2,3 +2,4 @@ SQLAlchemy
 requests
 Flask
 gunicorn
+psycopg2

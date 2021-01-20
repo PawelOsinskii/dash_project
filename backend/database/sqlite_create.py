@@ -1,11 +1,18 @@
 # This Python file uses the following encoding: utf-8
-import sqlite3
+import psycopg2 as psycopg2
+from psycopg2 import sql
 
-conn = sqlite3.connect('/backend/Sqlite-Data/example.db')
+conn = psycopg2.connect(dbname='postgres',
+      user='postgres', host='db',
+      password='python123')
 
 c = conn.cursor()
 c.execute('DROP TABLE IF EXISTS data_from_tesla')
 c.execute('DROP TABLE IF EXISTS person')
+
+c.execute(sql.SQL("CREATE DATABASE {}").format(
+        sql.Identifier('pythonlab'))
+    )
 
 c.execute('''
           CREATE TABLE person
@@ -44,5 +51,9 @@ c.execute('''
           (id, firstname, lastname, birthdate) VALUES (6, 'Janek', 'Grzegorczyk', '1982')
           ''')
 
+c.close()
+
 conn.commit()
 conn.close()
+
+print('WYKONANO')
