@@ -84,6 +84,46 @@ def get_all():
 
     return jsonify(json_return)
 
+@app.route('/patients')
+def get_all_patients():
+    connection = sqlite3.connect(r'Sqlite-Data/example.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM person")
+    rows = cur.fetchall()
+    json_return = []
+    for row in rows:
+        row_to_json ={
+                      'birthdate': row[4],
+                      'firstname': row[2],
+                      'lastname': row[3],
+                      'disabled': row[1],
+                      }
+        json_return.append(row_to_json)
+
+    connection.close()
+
+    return jsonify(json_return)
+
+@app.route('/patients/<id>')
+def get_patient(id):
+    connection = sqlite3.connect(r'Sqlite-Data/example.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM person where id=?", (id,))
+    rows = cur.fetchall()
+    json_return = []
+    for row in rows:
+        row_to_json = {
+            'birthdate': row[4],
+            'firstname': row[2],
+            'lastname': row[3],
+            'disabled': row[1],
+        }
+        json_return.append(row_to_json)
+
+    connection.close()
+
+    return jsonify(json_return)
+
 
 if __name__ == '__main__':
     app.run()

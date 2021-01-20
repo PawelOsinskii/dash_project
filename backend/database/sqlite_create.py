@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import sqlite3
 
-conn = sqlite3.connect('/backend/Sqlite-Data/example.db')
+conn = sqlite3.connect(r'../Sqlite-Data/example.db')
 
 c = conn.cursor()
 c.execute('DROP TABLE IF EXISTS data_from_tesla')
@@ -9,7 +9,7 @@ c.execute('DROP TABLE IF EXISTS person')
 
 c.execute('''
           CREATE TABLE person
-          (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname varchar(250) NOT NULL, lastname varchar(250) NOT NULL, birthdate varchar(250) NOT NULL)
+          (id INTEGER PRIMARY KEY AUTOINCREMENT,  disable INTEGER, firstname varchar(250) NOT NULL, lastname varchar(250) NOT NULL, birthdate varchar(250) NOT NULL)
           ''')
 c.execute('''
           CREATE TABLE data_from_tesla
@@ -21,27 +21,27 @@ c.execute('''
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (1, 'Janek', 'Grzegorczyk', '1982')
+          (id, disable, firstname, lastname, birthdate) VALUES (1, 0, 'Janek', 'Grzegorczyk', '1982')
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (2, 'Janek', 'Grzegorczyk', '1982')
+          (id, disable, firstname, lastname, birthdate) VALUES (2, 1, 'Elżbieta', 'Kochalska', '1976')
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (3, 'Janek', 'Grzegorczyk', '1982')
+          (id, disable, firstname, lastname, birthdate) VALUES (3, 0, 'Albert', 'Lisowski', '1991')
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (4, 'Janek', 'Grzegorczyk', '1982')
+          (id, disable, firstname, lastname, birthdate) VALUES (4, 1, 'Ewelina', 'Nosowska', '1998')
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (5, 'Janek', 'Grzegorczyk', '1982')
+          (id,  disable, firstname, lastname, birthdate) VALUES (5, 0, 'Piotr', 'Fokalski', '1985')
           ''')
 c.execute('''
           Insert into person
-          (id, firstname, lastname, birthdate) VALUES (6, 'Janek', 'Grzegorczyk', '1982')
+          (id, disable, firstname, lastname, birthdate) VALUES (6, 0,  'Bartosz', 'Moskalski', '1981')
           ''')
 
 conn.commit()
