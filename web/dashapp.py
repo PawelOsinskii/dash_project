@@ -7,25 +7,25 @@ from dash.dependencies import Input, Output
 import sys
 import plotly.express as px
 import pandas as pd
+import requests
 
 API=r'http://127.0.0.1:5000/'
-NUM_OF_PATIENTS = 6
-df = {}
-app = dash.Dash(__name__)
 
-t = np.arange(0, 100, 0.1)
-y_1 = np.sin(t)
-y_2 = np.cos(t)
+def get_num_of_patients():
+    api_link = API + 'patients'
+    data = pd.read_json(api_link)
+    return len(data)
+NUM_OF_PATIENTS = get_num_of_patients()
+df = {}
+patient = {}
+app = dash.Dash(__name__)
 
 patients = []
 for el in list(range(1, NUM_OF_PATIENTS+1)):
     patients.append({'label': f'patient {el}', 'value': f'{el}'})
 
 
-patient = {'birthdate': 'urodziny',
-            'disabled': 'alo',
-            'firstname': 'firstname',
-            'lastname': 'lastname'}
+
 
 app.layout = html.Div(children=[
     html.H1(children='Orthopedist\'s aplication for movement analysis'),
@@ -81,14 +81,17 @@ app.layout = html.Div(children=[
     html.Hr(),
 
     html.Div([
-    dcc.Graph(id='time-graph'),
-    dcc.Slider(
-        id='time-slider',
-        min=0,
-        max=600,
-        step=1
-    )
-])
+        dcc.Graph(id='time-graph'),
+        dcc.Slider(
+            id='time-slider',
+            min=0,
+            max=600,
+            step=1,
+            value=0
+        )
+    ]),
+
+    html.Div(id='time-stamp', style={'text-align' : 'center'})
 ])
 
 
@@ -147,26 +150,39 @@ def update_statistical_graph(selected_stat, patient):
     Output(component_id='lastname', component_property='children'),
     Input(component_id='chose_patient',  component_property='value'))
 def update_patient(patient_number):
-    return list(patient.values())
+    api_link = API + 'patients/' + str(patient_number)
+    data = requests.get(api_link).json()[0]
+    return data['birthdate'], data['disabled'], data['firstname'], data['lastname']
 
 @app.callback(
-    Output('time-graph', 'figure'),
-    Input('time-slider', 'value'))
-def update_figure(time):
-    y = [1024, 1036, 1072, 965, 1055, 1000]
+    Output(component_id='time-graph', component_property='figure'),
+    Output(component_id='time-slider', component_property='max'),
+    Output(component_id='time-stamp', component_property='children'),
+    Input(component_id='time-slider', component_property='value'),
+    Input(component_id='chose_patient',  component_property='value'))
+def update_figure(time, patient):
+    df = update_data(patient)
+
+    time_stamp = df.iloc[int(time)]['date']
+
+    data = df[['l0', 'l1', 'l2', 'p0', 'p1', 'p2']]
+    records_count = len(data.index)
+    data = data.iloc[int(time)]
+
+
+
     figure = {
         'data': [{
             'x': ['L0', 'L1', 'L2', 'R0', 'R1', 'R2'],
-            'y': y,
-            'type': 'bar',
+            'y': data,
             'name': 'Maximal pressure'
         }],
         'layout': {
-            'title': 'Statistical data about foot pressure points',
+            'title': 'Pressure of every point in particural time-stamp',
         }
     }
 
-    return figure
+    return figure, records_count, time_stamp
 
 def update_data(patient_id):
     api_link = API + 'get/' + str(patient_id)
