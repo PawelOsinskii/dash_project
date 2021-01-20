@@ -5,15 +5,22 @@ import plotly.graph_objs as go
 import numpy as np
 from dash.dependencies import Input, Output
 import sys
+import plotly.express as px
+import pandas as pd
 
+API=r'http://127.0.0.1:5000/'
+NUM_OF_PATIENTS = 6
+df = {}
 app = dash.Dash(__name__)
 
 t = np.arange(0, 100, 0.1)
 y_1 = np.sin(t)
 y_2 = np.cos(t)
-patients = [{'label': 'patient1', 'value': '1'},
-            {'label': 'patient2', 'value': '2'},
-            {'label': 'patient3', 'value': '3'}]
+
+patients = []
+for el in list(range(1, NUM_OF_PATIENTS+1)):
+    patients.append({'label': f'patient {el}', 'value': f'{el}'})
+
 
 patient = {'birthdate': 'urodziny',
             'disabled': 'alo',
@@ -40,6 +47,8 @@ app.layout = html.Div(children=[
         html.Div(children=[html.B("Lastname: "), html.Span(id="lastname")])
     ]),
 
+    html.Hr(),
+
     html.H3(children='Patient 1, real-time data:'),
 
     dcc.Graph(
@@ -47,9 +56,9 @@ app.layout = html.Div(children=[
     dcc.RadioItems(
         id='chose_left_right',
         options=[
-            {'label': 'Pressure point 1', 'value': '1'},
-            {'label': 'Pressure point 2', 'value': '2'},
-            {'label': 'Pressure point 3', 'value': '3'}
+            {'label': 'Pressure point 1', 'value': '0'},
+            {'label': 'Pressure point 2', 'value': '1'},
+            {'label': 'Pressure point 3', 'value': '2'}
         ],
         value='1'
     ),
@@ -88,31 +97,15 @@ app.layout = html.Div(children=[
     Input(component_id='chose_left_right',  component_property='value'),
     Input(component_id='chose_patient',  component_property='value'))
 def update_left_right_graph(pressure_point, patient):
-    change = int(pressure_point)
-    change2 = int(patient)
-    t = np.arange(0, 100, 0.1)
-    y_1 = np.sin(t + change + change2)
-    y_2 = np.cos(t + change + change2)
-    fig = go.Figure()
-
-    fig.add_trace(go.Scatter(
-        x=t,
-        y=y_1,
-        name="Left foot"
-    ))
-    fig.add_trace(go.Scatter(
-        x=t,
-        y=y_2,
-        name="Right foot"
-    ))
+    df = update_data(patient)
+    fig = px.scatter(df[[f'l{pressure_point}',f'p{pressure_point}']])
     fig.update_layout(
-        yaxis={'range': [-3, 3]},
-        xaxis={'range': [0, 100]},
         title='Left-rifght foot comparison',
         xaxis_title="Time",
         yaxis_title="Pressure",
         legend_title="Legend",
     )
+
 
     return fig
 
@@ -121,15 +114,22 @@ def update_left_right_graph(pressure_point, patient):
     Output(component_id='statistical_graph', component_property='figure'),
     Input(component_id='chose_statstical_data',  component_property='value'),
     Input(component_id='chose_patient',  component_property='value'))
+
 def update_statistical_graph(selected_stat, patient):
-    change = int(selected_stat) * 100
-    change2 = int(patient) * 100
-    y = [1024, 1036, 1072, 965, 1055, 1000]
-    y = [x+change+change2 for x in y]
+    df = update_data(patient)
+
+    data = df[['l0', 'l1', 'l2', 'p0', 'p1', 'p2']]
+    if selected_stat == '1':
+        data = data.max()
+    elif selected_stat == '2':
+        data = data.min()
+    elif selected_stat == '3':
+        data = data.mean()
+        
     figure = {
         'data': [{
             'x': ['L0', 'L1', 'L2', 'R0', 'R1', 'R2'],
-            'y': y,
+            'y': data,
             'type': 'bar',
             'name': 'Maximal pressure'
         }],
@@ -137,7 +137,7 @@ def update_statistical_graph(selected_stat, patient):
             'title': 'Statistical data about foot pressure points',
         }
     }
-
+    
     return figure
 
 @app.callback(
@@ -167,6 +167,12 @@ def update_figure(time):
     }
 
     return figure
+
+def update_data(patient_id):
+    api_link = API + 'get/' + str(patient_id)
+    data = pd.read_json(api_link)
+    return pd.DataFrame(data)
+
 
 if __name__ == '__main__':
     app.run_server(host="0.0.0.0", port=8050, debug=True)
