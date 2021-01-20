@@ -47,6 +47,8 @@ app.layout = html.Div(children=[
         html.Div(children=[html.B("Lastname: "), html.Span(id="lastname")])
     ]),
 
+    html.Hr(),
+
     html.H3(children='Patient 1, real-time data:'),
 
     dcc.Graph(
@@ -112,15 +114,22 @@ def update_left_right_graph(pressure_point, patient):
     Output(component_id='statistical_graph', component_property='figure'),
     Input(component_id='chose_statstical_data',  component_property='value'),
     Input(component_id='chose_patient',  component_property='value'))
+
 def update_statistical_graph(selected_stat, patient):
-    change = int(selected_stat) * 100
-    change2 = int(patient) * 100
-    y = [1024, 1036, 1072, 965, 1055, 1000]
-    y = [x+change+change2 for x in y]
+    df = update_data(patient)
+
+    data = df[['l0', 'l1', 'l2', 'p0', 'p1', 'p2']]
+    if selected_stat == '1':
+        data = data.max()
+    elif selected_stat == '2':
+        data = data.min()
+    elif selected_stat == '3':
+        data = data.mean()
+        
     figure = {
         'data': [{
             'x': ['L0', 'L1', 'L2', 'R0', 'R1', 'R2'],
-            'y': y,
+            'y': data,
             'type': 'bar',
             'name': 'Maximal pressure'
         }],
@@ -128,7 +137,7 @@ def update_statistical_graph(selected_stat, patient):
             'title': 'Statistical data about foot pressure points',
         }
     }
-
+    
     return figure
 
 @app.callback(
