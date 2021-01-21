@@ -6,3 +6,4 @@ matplotlib
 redis
 numpy
 plotly
+requests
